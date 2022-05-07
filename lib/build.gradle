@@ -36,12 +36,12 @@ dependencies {
 }
 
 def srcDirs = [
-  'com/google/android/material/datepicker',
+  'io/mhssn/android/material/datepicker',
 ]
 
 android {
   sourceSets {
-    main.manifest.srcFile 'java/com/google/android/material/AndroidManifest.xml'
+    main.manifest.srcFile 'java/io/mhssn/android/material/AndroidManifest.xml'
     main.java.srcDir 'java'
     main.java.includes = srcDirs.collect { it + '/**/*.java' }
     main.java.excludes = [
@@ -82,7 +82,7 @@ task generateJavadocs(type: Javadoc) {
     options.addStringOption("hdf", "dac")
     options.addBooleanOption("devsite", true)
     options.addBooleanOption("yamlV2", true)
-    options.addStringOption("dac_libraryroot", "com/google/android/material")
+    options.addStringOption("dac_libraryroot", "io/mhssn/android/material")
     options.addStringOption("dac_dataname", "MATERIAL_DATA")
   }
 
