@@ -6,6 +6,8 @@ apply plugin: 'maven-publish'
 version = mdcLibraryVersion
 
 dependencies {
+  implementation group: 'com.github.msarhan', name: 'ummalqura-calendar', version:'2.0.2'
+
   api compatibility("annotation")
   api compatibility("appcompat")
   api compatibility("cardview")

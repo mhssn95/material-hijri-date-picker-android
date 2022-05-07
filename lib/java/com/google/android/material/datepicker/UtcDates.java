@@ -15,13 +15,16 @@
  */
 package com.google.android.material.datepicker;
 
-import com.google.android.material.R;
-
 import android.annotation.TargetApi;
 import android.content.res.Resources;
 import android.os.Build.VERSION_CODES;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import com.github.msarhan.ummalqura.calendar.UmmalquraCalendar;
+import com.google.android.material.R;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -48,7 +51,8 @@ class UtcDates {
     return timeSource == null ? TimeSource.system() : timeSource;
   }
 
-  private UtcDates() {}
+  private UtcDates() {
+  }
 
   private static TimeZone getTimeZone() {
     return TimeZone.getTimeZone(UTC);
@@ -92,7 +96,8 @@ class UtcDates {
    * @see @see Calendar#clear()
    */
   static Calendar getUtcCalendarOf(@Nullable Calendar rawCalendar) {
-    Calendar utc = Calendar.getInstance(getTimeZone());
+    UmmalquraCalendar utc = new UmmalquraCalendar();
+    utc.setTimeZone(getTimeZone());
     if (rawCalendar == null) {
       utc.clear();
     } else {
@@ -148,13 +153,10 @@ class UtcDates {
   }
 
   static SimpleDateFormat getTextInputFormat() {
-    String pattern =
-        ((SimpleDateFormat) DateFormat.getDateInstance(DateFormat.SHORT, Locale.getDefault()))
-            .toPattern()
-            .replaceAll("\\s+", "");
+    String pattern = "d/M/yyyy";
     SimpleDateFormat format = new SimpleDateFormat(pattern, Locale.getDefault());
+    format.setCalendar(new UmmalquraCalendar());
     format.setTimeZone(UtcDates.getTimeZone());
-    format.setLenient(false);
     return format;
   }
 

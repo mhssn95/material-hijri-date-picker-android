@@ -15,24 +15,31 @@
  */
 package com.google.android.material.datepicker;
 
-import com.google.android.material.R;
-
 import android.content.Context;
 import android.text.TextUtils;
 import android.view.View;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import com.github.msarhan.ummalqura.calendar.DateTimeException;
+import com.github.msarhan.ummalqura.calendar.UmmalquraCalendar;
+import com.google.android.material.R;
 import com.google.android.material.internal.TextWatcherAdapter;
 import com.google.android.material.textfield.TextInputLayout;
+
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 abstract class DateFormatTextWatcher extends TextWatcherAdapter {
 
   private static final int VALIDATION_DELAY = 1000;
 
-  @NonNull private final TextInputLayout textInputLayout;
+  @NonNull
+  private final TextInputLayout textInputLayout;
 
   private final DateFormat dateFormat;
   private final CalendarConstraints constraints;
@@ -74,7 +81,8 @@ abstract class DateFormatTextWatcher extends TextWatcherAdapter {
 
   abstract void onValidDate(@Nullable Long day);
 
-  void onInvalidDate() {}
+  void onInvalidDate() {
+  }
 
   @Override
   public void onTextChanged(@NonNull CharSequence s, int start, int before, int count) {
@@ -87,18 +95,27 @@ abstract class DateFormatTextWatcher extends TextWatcherAdapter {
     }
 
     try {
-      Date date = dateFormat.parse(s.toString());
+      int day = Integer.parseInt(s.toString().split("/")[0]);
+      String newDate = "1" + s.toString().substring(s.toString().indexOf("/"));
+      UmmalquraCalendar calendar = new UmmalquraCalendar(Locale.getDefault());
+      calendar.setTimeInMillis(dateFormat.parse(newDate).getTime());
+      int lengthOfMonth = calendar.lengthOfMonth();
+      if (day > lengthOfMonth) {
+        throw new DateTimeException("Invalid Hijrah day of month: " + day);
+      }
+      calendar.set(Calendar.DAY_OF_MONTH, day);
       textInputLayout.setError(null);
-      final long milliseconds = date.getTime();
+      final long milliseconds = calendar.getTimeInMillis();
       if (constraints.getDateValidator().isValid(milliseconds)
           && constraints.isWithinBounds(milliseconds)) {
-        onValidDate(date.getTime());
+        onValidDate(milliseconds);
         return;
       }
 
       setRangeErrorCallback = createRangeErrorCallback(milliseconds);
       runValidation(textInputLayout, setRangeErrorCallback);
-    } catch (ParseException e) {
+    } catch (ParseException | StringIndexOutOfBoundsException | DateTimeException e) {
+      e.printStackTrace();
       runValidation(textInputLayout, setErrorCallback);
     }
   }
@@ -107,9 +124,12 @@ abstract class DateFormatTextWatcher extends TextWatcherAdapter {
     return new Runnable() {
       @Override
       public void run() {
+        //TODO::handle out of range
+/*
         textInputLayout.setError(
             String.format(outOfRange, DateStrings.getDateString(milliseconds)));
         onInvalidDate();
+*/
       }
     };
   }

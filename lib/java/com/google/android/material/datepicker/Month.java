@@ -20,6 +20,9 @@ import android.os.Parcelable;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import com.github.msarhan.ummalqura.calendar.UmmalquraCalendar;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Arrays;
@@ -62,7 +65,7 @@ final class Month implements Comparable<Month>, Parcelable {
     month = firstOfMonth.get(Calendar.MONTH);
     year = firstOfMonth.get(Calendar.YEAR);
     daysInWeek = firstOfMonth.getMaximum(Calendar.DAY_OF_WEEK);
-    daysInMonth = firstOfMonth.getActualMaximum(Calendar.DAY_OF_MONTH);
+    daysInMonth = ((UmmalquraCalendar)firstOfMonth).lengthOfMonth();
     timeInMillis = firstOfMonth.getTimeInMillis();
   }
 
@@ -182,7 +185,10 @@ final class Month implements Comparable<Month>, Parcelable {
   @NonNull
   Month monthsLater(int months) {
     Calendar laterMonth = UtcDates.getDayCopy(firstOfMonth);
-    laterMonth.add(Calendar.MONTH, months);
+    int year = laterMonth.get(Calendar.YEAR) + months/12;
+    int month = months % 12;
+    laterMonth.set(Calendar.YEAR, year);
+    laterMonth.set(Calendar.MONTH, month);
     return new Month(laterMonth);
   }
 

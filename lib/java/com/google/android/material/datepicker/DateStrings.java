@@ -18,22 +18,29 @@ package com.google.android.material.datepicker;
 import android.icu.text.DateFormat;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
-import android.text.format.DateUtils;
+
 import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
+
+import com.github.msarhan.ummalqura.calendar.UmmalquraCalendar;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-/** Util methods for formatting date strings for use in {@link MaterialDatePicker}. */
+/**
+ * Util methods for formatting date strings for use in {@link MaterialDatePicker}.
+ */
 class DateStrings {
 
-  private DateStrings() {}
+  private DateStrings() {
+  }
 
   static String getYearMonth(long timeInMillis) {
-    int flags = DateUtils.FORMAT_SHOW_YEAR | DateUtils.FORMAT_NO_MONTH_DAY | DateUtils.FORMAT_UTC;
-    return DateUtils.formatDateTime(null, timeInMillis, flags);
+    UmmalquraCalendar calendar = new UmmalquraCalendar();
+    calendar.setTimeInMillis(timeInMillis);
+    return calendar.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault()) + " " + calendar.get(Calendar.YEAR);
   }
 
   static String getYearMonthDay(long timeInMillis) {
@@ -47,14 +54,13 @@ class DateStrings {
    * java.text.DateFormat#MEDIUM} before API 24.
    *
    * @param timeInMillis long in UTC milliseconds to turn into string with year, month, and day.
-   * @param locale Locale for date string.
+   * @param locale       Locale for date string.
    * @return Date string with year, month, and day formatted properly for the specified Locale.
    */
   static String getYearMonthDay(long timeInMillis, Locale locale) {
-    if (VERSION.SDK_INT >= VERSION_CODES.N) {
-      return UtcDates.getYearAbbrMonthDayFormat(locale).format(new Date(timeInMillis));
-    }
-    return UtcDates.getMediumFormat(locale).format(new Date(timeInMillis));
+    UmmalquraCalendar calendar = new UmmalquraCalendar();
+    calendar.setTimeInMillis(timeInMillis);
+    return calendar.get(Calendar.DAY_OF_MONTH) + " " + calendar.getDisplayName(UmmalquraCalendar.MONTH, UmmalquraCalendar.LONG, locale) + calendar.get(Calendar.YEAR);
   }
 
   static String getMonthDay(long timeInMillis) {
@@ -68,7 +74,7 @@ class DateStrings {
    * java.text.DateFormat#MEDIUM} before API 24.
    *
    * @param timeInMillis long in UTC milliseconds to turn into string with month and day.
-   * @param locale Locale for date string.
+   * @param locale       Locale for date string.
    * @return Date string with month and day formatted properly for the specified Locale.
    */
   static String getMonthDay(long timeInMillis, Locale locale) {
@@ -111,7 +117,7 @@ class DateStrings {
    *
    * <p>If userDefinedDateFormat is set, this format overrides the rule above.
    *
-   * @param timeInMillis milliseconds since UTC epoch.
+   * @param timeInMillis          milliseconds since UTC epoch.
    * @param userDefinedDateFormat {@link SimpleDateFormat} specified by the user, if set.
    * @return Formatted date string.
    */
@@ -144,8 +150,8 @@ class DateStrings {
    *
    * <p>If userDefinedDateFormat is set, this format overrides the rules above.
    *
-   * @param start Start date.
-   * @param end End date.
+   * @param start                 Start date.
+   * @param end                   End date.
    * @param userDefinedDateFormat {@link SimpleDateFormat} specified by the user, if set.
    * @return Formatted date range string.
    */
